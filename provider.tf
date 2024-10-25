@@ -9,10 +9,10 @@ terraform {
   }
 
   backend "s3" {
-    bucket  = "gds-security-terraform-staging"
-    key     = "staging/misp/services/misp.tfstate"
-    region  = "eu-west-1"
-    profile = "cst-test"
+    bucket  = "gds-security-terraform"
+    key     = "terraform/state/account/cst-test/service/misp.tfstate"
+    region  = "eu-west-2"
+    profile = "cst-prod"
     encrypt = true
     }
 }
