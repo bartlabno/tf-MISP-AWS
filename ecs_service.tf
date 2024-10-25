@@ -19,19 +19,14 @@ resource "aws_ecs_service" "misp" {
     load_balancer {
         container_name = var.project
         container_port = "80"
-        target_group_arn = "arn:aws:elasticloadbalancing:eu-west-2:779799343306:targetgroup/misp/da4d0311f440085c"
+        target_group_arn = aws_lb_target_group.target_group.arn
     }
 
     network_configuration {
         assign_public_ip = true
         security_groups = [
-            "sg-099a8afc0dcdbe1e4",
-            "sg-0d08b5d03f5faa340"
+            data.aws_security_groups.sgs.ids[0]
         ]
-        subnets = [
-            "subnet-02a0882b3e4c86373",
-            "subnet-08919d492ab1448af",
-            "subnet-096f4e8156c027d19"
-        ]
+        subnets = [data.aws_subnets.public_subnets.ids[0],data.aws_subnets.public_subnets.ids[1],data.aws_subnets.public_subnets.ids[2]]
     }
 }

@@ -1,3 +1,7 @@
+data "aws_db_subnet_group" "db_subnet" {
+  name = "default-${var.vpc}"
+}
+
 resource "aws_rds_cluster" "misp" {
   cluster_identifier      = "misp"
   engine                  = "aurora-mysql"
@@ -14,7 +18,7 @@ resource "aws_rds_cluster" "misp" {
   skip_final_snapshot   = true
 
   db_cluster_parameter_group_name = "default.aurora-mysql8.0"
-  db_subnet_group_name = "default-vpc-0434f125e932091fc"
+  db_subnet_group_name = data.aws_db_subnet_group.db_subnet.name
 
   deletion_protection = true
 }

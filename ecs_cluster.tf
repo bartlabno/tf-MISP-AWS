@@ -30,6 +30,6 @@ resource "aws_ecs_cluster" "misp" {
     }
 
     tags = "${tomap({
-        "AWS.SSM.AppManager.ECS.Cluster.ARN" = "arn:aws:ecs:eu-west-2:779799343306:cluster/misp"
+        "AWS.SSM.AppManager.ECS.Cluster.ARN" = "arn:aws:ecs:eu-west-2:${data.aws_caller_identity.current.account_id}:cluster/misp"
     })}"
 }

@@ -8,12 +8,20 @@ data "aws_subnets" "public_subnets" {
         values = [data.aws_vpc.misp.id]
     }
 
-    tags = {
-        Name = "*public*"
+    filter {
+        name    = "tag:Name"
+        values  = ["*public*"]
+    }
+}
+
+data "aws_security_groups" "sgs" {
+    filter {
+        name   = "vpc-id"
+        values = [var.vpc]
     }
 
-    # filter {
-    #     name    = "name"
-    #     values  = ["*public*"]
-    # }
+    filter {
+        name    = "group-name"
+        values  = ["*misp*"]
+    }
 }
