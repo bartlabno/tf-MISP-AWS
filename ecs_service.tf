@@ -3,6 +3,9 @@ resource "aws_ecs_service" "misp" {
   cluster         = aws_ecs_cluster.misp.id
   task_definition = "${aws_ecs_task_definition.misp.id}:${aws_ecs_task_definition.misp.revision}"
   desired_count   = 1
+  launch_type = "FARGATE"
+
+  depends_on = [aws_cloudwatch_log_group.ecs_misp]
 
   enable_ecs_managed_tags = true
 

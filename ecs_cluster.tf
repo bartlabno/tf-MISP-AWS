@@ -8,7 +8,7 @@ resource "aws_service_discovery_http_namespace" "misp" {
 }
 
 resource "aws_cloudwatch_log_group" "ecs_misp" {
-  name = "/ecs/${var.project}"
+  name = "/ecs/${var.environment}/${var.project}"
 }
 
 resource "aws_ecs_cluster" "misp" {

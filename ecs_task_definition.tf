@@ -1,5 +1,7 @@
 data "aws_iam_policy_document" "ecs_task_execution_assume_role_policy" {
   statement {
+    sid     = ""
+    effect  = "Allow"
     actions = ["sts:AssumeRole"]
 
     principals {
@@ -12,7 +14,6 @@ data "aws_iam_policy_document" "ecs_task_execution_assume_role_policy" {
 resource "aws_iam_role" "ecs_task_execution_role" {
   name               = "misp_ecs_task_role"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_assume_role_policy.json
-  path               = "/"
 }
 
 data "aws_iam_policy" "ecs_task_execution" {
@@ -34,7 +35,8 @@ resource "aws_iam_role_policy" "password_policy_secretsmanager" {
     "Statement": [
       {
         "Action": [
-          "secretsmanager:GetSecretValue"
+          "secretsmanager:GetSecretValue",
+          "ssm:GetParameters"
         ],
         "Effect": "Allow",
         "Resource": [
@@ -58,6 +60,7 @@ resource "aws_ecs_task_definition" "misp" {
   execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
 
   requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
 
   runtime_platform {
     operating_system_family = "LINUX"
@@ -67,11 +70,11 @@ resource "aws_ecs_task_definition" "misp" {
   container_definitions = jsonencode([
     {
       name      = var.project
-      image     = (var.image_version == "latest" ? "ghcr.io/nukib/misp:latest" : "${aws_ecr_repository.misp.repository_url}:${var.image_version}")
+      image     = var.image_version == "latest" ? "ghcr.io/nukib/misp:latest" : "${aws_ecr_repository.misp.repository_url}:${var.image_version}"
       essential = true
 
-      memoryReservation = 16384
-      network_mode      = "awsvpc"
+      memory = 16384
+      cpu    = 4
       mountPoints       = []
       systemControls    = []
       volumesFrom       = []
@@ -80,7 +83,7 @@ resource "aws_ecs_task_definition" "misp" {
         Logdriver = "awslogs"
         options = {
           awslogs-create-group  = "true"
-          awslogs-group         = "/ecs/misp"
+          awslogs-group         = "/ecs/${var.environment}/${var.project}"
           awslogs-region        = "eu-west-2"
           awslogs-stream-prefix = "ecs"
         }
@@ -106,7 +109,7 @@ resource "aws_ecs_task_definition" "misp" {
         },
         {
           name  = "REDIS_HOST"
-          value = aws_elasticache_cluster.misp-001.configuration_endpoint
+          value = aws_elasticache_cluster.misp-001.cluster_address
         },
         {
           name  = "DATA_DIR"

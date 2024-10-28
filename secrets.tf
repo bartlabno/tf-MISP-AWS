@@ -65,8 +65,8 @@ resource "aws_secretsmanager_secret_version" "security_extras" {
   secret_id     = aws_secretsmanager_secret.security_extras.id
   secret_string = <<EOF
 {
-"MISP_UUID": "${random_uuid.misp_uuid.result}"
-"SECURITY_SALT": "${random_password.misp_salt.result}"
+"MISP_UUID": "${random_uuid.misp_uuid.result}",
+"SECURITY_SALT": "${random_password.misp_salt.result}",
 "SECURITY_ENCRYPTION_KEY": "${random_password.encryption_key.result}"
 }
 EOF
@@ -76,8 +76,8 @@ resource "aws_secretsmanager_secret_version" "db_password" {
   secret_id     = aws_secretsmanager_secret.db_password.id
   secret_string = <<EOF
 {
-"username": "${random_password.db_username.result}
-"password": "${random_password.db_password.result}
+"username": "${random_password.db_username.result}",
+"password": "${random_password.db_password.result}"
 }
 EOF
 }
@@ -86,8 +86,8 @@ resource "aws_secretsmanager_secret_version" "smtp" {
   secret_id     = aws_secretsmanager_secret.smtp.id
   secret_string = <<EOF
 {
-"username": "${random_password.smtp_username.result}
-"password": "${random_password.smtp_password.result}
+"username": "${random_password.smtp_username.result}",
+"password": "${random_password.smtp_password.result}"
 }
 EOF
 }

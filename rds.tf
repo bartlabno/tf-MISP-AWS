@@ -22,3 +22,12 @@ resource "aws_rds_cluster" "misp" {
 
   deletion_protection = true
 }
+
+resource "aws_rds_cluster_instance" "misp" {
+  count              = var.environment != "prod" ? 1 : 2
+  identifier         = "${var.project}-${count.index}"
+  cluster_identifier = aws_rds_cluster.misp.id
+  engine             = aws_rds_cluster.misp.engine
+  engine_version     = aws_rds_cluster.misp.engine_version
+  instance_class     = var.environment != "prod" ? "db.r5.large" : "db.r6g.2xlarge"
+}
