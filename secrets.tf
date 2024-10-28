@@ -1,11 +1,3 @@
-terraform {
-  required_providers {
-    random = {
-      source  = "hashicorp/random"
-      version = "3.6.2"
-    }
-  }
-}
 data "aws_kms_key" "secretsmanager" {
   key_id = "alias/aws/secretsmanager"
 }
