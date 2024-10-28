@@ -73,11 +73,11 @@ resource "aws_ecs_task_definition" "misp" {
       image     = var.image_version == "latest" ? "ghcr.io/nukib/misp:latest" : "${aws_ecr_repository.misp.repository_url}:${var.image_version}"
       essential = true
 
-      memory = 16384
-      cpu    = 4
-      mountPoints       = []
-      systemControls    = []
-      volumesFrom       = []
+      memory         = 16384
+      cpu            = 4
+      mountPoints    = []
+      systemControls = []
+      volumesFrom    = []
 
       logConfiguration = {
         Logdriver = "awslogs"

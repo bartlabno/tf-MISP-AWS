@@ -26,12 +26,12 @@ resource "aws_elasticache_subnet_group" "misp" {
 }
 
 resource "aws_elasticache_replication_group" "misp" {
-  replication_group_id          = var.project
+  replication_group_id = var.project
 
   node_type            = "cache.r6g.large"
   port                 = 6379
   parameter_group_name = "default.redis7.cluster.on"
-  engine_version = "7.1"
+  engine_version       = "7.1"
 
   snapshot_retention_limit = var.environment != "prod" ? 1 : 3
   snapshot_window          = "00:00-05:00"
