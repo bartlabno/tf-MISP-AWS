@@ -7,7 +7,7 @@ resource "aws_alb" "application_load_balancer" {
   name               = "misp"
   internal           = false
   load_balancer_type = "application"
-  subnets            = [data.aws_subnets.public_subnets.ids[0],data.aws_subnets.public_subnets.ids[1],data.aws_subnets.public_subnets.ids[2]]
+  subnets            = [data.aws_subnets.public_subnets.ids[0], data.aws_subnets.public_subnets.ids[1], data.aws_subnets.public_subnets.ids[2]]
   security_groups    = [data.aws_security_groups.sgs.ids[0]]
 }
 
@@ -47,8 +47,8 @@ resource "aws_lb_listener" "listener" {
 
 resource "aws_lb_listener" "listener_https" {
   load_balancer_arn = aws_alb.application_load_balancer.id
-  port = "443"
-  protocol = "HTTPS"
+  port              = "443"
+  protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
   certificate_arn   = data.aws_acm_certificate.misp.arn
 

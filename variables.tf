@@ -1,27 +1,27 @@
 variable "environment" {
-    type    = string
+  type = string
 }
 
 variable "project" {
-    type    = string
+  type = string
 }
 
 variable "owner" {
-    type = string
+  type = string
 }
 
 variable "profile" {
-    type = string
+  type = string
 }
 
 variable "image_version" {
-    type = string
+  type = string
 }
 
 variable "vpc" {
-    type = string
+  type = string
 }
 
 variable "base_domain" {
-    type = string
+  type = string
 }

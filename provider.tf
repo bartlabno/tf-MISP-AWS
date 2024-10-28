@@ -14,12 +14,12 @@ terraform {
     region  = "eu-west-2"
     profile = "cst-prod"
     encrypt = true
-    }
+  }
 }
 
 provider "aws" {
-  region     = "eu-west-2"
-  profile    = var.profile
+  region  = "eu-west-2"
+  profile = var.profile
 
   default_tags {
     tags = {

@@ -1,6 +1,6 @@
-owner = "Cabinet Office"
+owner       = "Cabinet Office"
 environment = "test"
-project = "misp"
+project     = "misp"
 base_domain = "misp.staging.gds-cyber-security.digital"
 
 profile = "cst-test"
