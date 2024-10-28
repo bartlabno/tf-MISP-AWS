@@ -11,8 +11,8 @@ resource "aws_rds_cluster" "misp" {
   backup_retention_period = 7
   preferred_backup_window = "01:00-02:00"
 
-  allocated_storage = 1
-  backtrack_window = 0
+  master_username = random_password.db_username.result
+  master_password = random_password.db_password.result
 
   copy_tags_to_snapshot = true
   skip_final_snapshot   = true

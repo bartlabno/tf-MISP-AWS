@@ -1,10 +1,61 @@
+data "aws_iam_policy_document" "ecs_task_execution_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "ecs_task_execution_role" {
+  name               = "misp_ecs_task_role"
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_assume_role_policy.json
+  path               = "/"
+}
+
+data "aws_iam_policy" "ecs_task_execution" {
+  arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = data.aws_iam_policy.ecs_task_execution.arn
+}
+
+resource "aws_iam_role_policy" "password_policy_secretsmanager" {
+  name = "password-policy-secretsmanager"
+  role = aws_iam_role.ecs_task_execution_role.id
+
+  policy = <<-EOF
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Action": [
+          "secretsmanager:GetSecretValue"
+        ],
+        "Effect": "Allow",
+        "Resource": [
+          "${aws_secretsmanager_secret.db_password.arn}",
+          "${aws_secretsmanager_secret.security_extras.arn}",
+          "${aws_secretsmanager_secret.api_users.arn}",
+          "${aws_secretsmanager_secret.smtp.arn}"
+        ]
+      }
+    ]
+  }
+  EOF
+}
+
 resource "aws_ecs_task_definition" "misp" {
     family = var.project
 
     cpu = 4096
     memory = 16384
     
-    execution_role_arn = "arn:aws:iam::779799343306:role/EcsMispTaskExecutionRole"
+    execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
     
     requires_compatibilities = ["FARGATE"]
 
@@ -16,7 +67,7 @@ resource "aws_ecs_task_definition" "misp" {
     container_definitions = jsonencode([
         {
         name    = var.project
-        image   = "${aws_ecr_repository.misp.repository_url}:${var.image_version}"
+        image   = (var.image_version == "latest" ? "ghcr.io/nukib/misp:latest" : "${aws_ecr_repository.misp.repository_url}:${var.image_version}")
         essential = true
     
         memoryReservation  = 16384
@@ -51,11 +102,11 @@ resource "aws_ecs_task_definition" "misp" {
             },
             {
                 name  = "MYSQL_DATABASE"
-                value = "misp"
+                value = aws_rds_cluster.misp.database_name
             },
             {
                 name  = "REDIS_HOST"
-                value = "misp-001.sq8sub.0001.euw2.cache.amazonaws.com"
+                value = aws_elasticache_cluster.misp-001.configuration_endpoint
             },
             {
                 name  = "DATA_DIR"
@@ -67,7 +118,7 @@ resource "aws_ecs_task_definition" "misp" {
             },
             {
                 name  = "SMTP_HOST"
-                value = "email-smtp.eu-west-2.amazonaws.com"
+                value = var.environment == "prod" ? "email-smtp.eu-west-2.amazonaws.com" : ""
             },
             {
                 name  = "SECURITY_ADVANCED_AUTHKEYS"
@@ -75,7 +126,7 @@ resource "aws_ecs_task_definition" "misp" {
             },
             {
                 name  = "MISP_ORG"
-                value = "GDS"
+                value = var.owner
             },
             {
                 name  = "JOBBER_FETCH_FEEDS_TIME"
@@ -83,11 +134,11 @@ resource "aws_ecs_task_definition" "misp" {
             },
             {
                 name  = "MISP_EMAIL"
-                value = "misp@cyber-security.digital.cabinet-office.gov.uk"
+                value = var.environment == "prod" ? "misp@cyber-security.digital.cabinet-office.gov.uk" : ""
             },
             {
                 name  = "MYSQL_HOST"
-                value = "misp-instance-1.cehvnmppczqy.eu-west-2.rds.amazonaws.com"
+                value = aws_rds_cluster.misp.endpoint
             },
             {
                 name  = "PHP_TIMEZONE"
@@ -95,7 +146,7 @@ resource "aws_ecs_task_definition" "misp" {
             },
             {
                 name  = "MISP_BASEURL"
-                value = "https://misp.cyber-security.digital.cabinet-office.gov.uk"
+                value = "https://${var.base_domain}"
             },
             {
                 name  = "JOBBER_USER_ID"
@@ -115,37 +166,37 @@ resource "aws_ecs_task_definition" "misp" {
             },
             {
                 name  = "MISP_EXTERNAL_BASEURL"
-                value = "https://misp.cyber-security.digital.cabinet-office.gov.uk"
+                value = "https://${var.base_domain}"
             }
         ]
         secrets = [
             {
                 name        = "MISP_UUID"
-                valueFrom   = "arn:aws:secretsmanager:eu-west-2:779799343306:secret:prod/misp/security_extras-JT6ClN:MISP_UUID::"
+                valueFrom   = "${aws_secretsmanager_secret.security_extras.arn}:MISP_UUID::"
             },
             {
                 name        = "MYSQL_LOGIN"
-                valueFrom   = "arn:aws:secretsmanager:eu-west-2:779799343306:secret:rds!cluster-7ca9d9f3-e6cb-4c20-bcb2-8aeb1ff05dd8-NjAVK6:username::"
+                valueFrom   = "${aws_secretsmanager_secret.db_password.arn}:username::"
             },
             {
                 name        = "MYSQL_PASSWORD"
-                valueFrom   = "arn:aws:secretsmanager:eu-west-2:779799343306:secret:rds!cluster-7ca9d9f3-e6cb-4c20-bcb2-8aeb1ff05dd8-NjAVK6:password::"
+                valueFrom   = "${aws_secretsmanager_secret.db_password.arn}:password::"
             },
             {
                 name        = "SECURITY_ENCRYPTION_KEY"
-                valueFrom   = "arn:aws:secretsmanager:eu-west-2:779799343306:secret:prod/misp/security_extras-JT6ClN:SECURITY_ENCRYPTION_KEY::"
+                valueFrom   = "${aws_secretsmanager_secret.security_extras.arn}:SECURITY_ENCRYPTION_KEY::"
             },
             {
                 name        = "SECURITY_SALT"
-                valueFrom   = "arn:aws:secretsmanager:eu-west-2:779799343306:secret:prod/misp/security_extras-JT6ClN:SECURITY_SALT::"
+                valueFrom   = "${aws_secretsmanager_secret.security_extras.arn}:SECURITY_SALT::"
             },
             {
                 name        = "SMTP_PASSWORD"
-                valueFrom   = "arn:aws:secretsmanager:eu-west-2:779799343306:secret:prod/misp/smtp_credentials-a8UjoK:smtp_password::"
+                valueFrom   = "${aws_secretsmanager_secret.smtp.arn}:password::"
             },
             {
                 name        = "SMTP_USERNAME"
-                valueFrom   = "arn:aws:secretsmanager:eu-west-2:779799343306:secret:prod/misp/smtp_credentials-a8UjoK:smtp_username::"
+                valueFrom   = "${aws_secretsmanager_secret.smtp.arn}:username::"
             }
         ]
         }

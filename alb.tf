@@ -1,3 +1,8 @@
+data "aws_acm_certificate" "misp" {
+  domain   = var.base_domain
+  statuses = ["ISSUED"]
+}
+
 resource "aws_alb" "application_load_balancer" {
   name               = "misp"
   internal           = false
@@ -28,6 +33,24 @@ resource "aws_lb_listener" "listener" {
   load_balancer_arn = aws_alb.application_load_balancer.id
   port              = "80"
   protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
+
+resource "aws_lb_listener" "listener_https" {
+  load_balancer_arn = aws_alb.application_load_balancer.id
+  port = "443"
+  protocol = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = data.aws_acm_certificate.misp.arn
 
   default_action {
     type             = "forward"
