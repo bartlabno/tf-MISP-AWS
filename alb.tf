@@ -4,7 +4,7 @@ data "aws_acm_certificate" "misp" {
 }
 
 resource "aws_alb" "application_load_balancer" {
-  name               = "misp"
+  name               = var.project
   internal           = false
   load_balancer_type = "application"
   subnets            = [data.aws_subnets.public_subnets.ids[0], data.aws_subnets.public_subnets.ids[1], data.aws_subnets.public_subnets.ids[2]]
@@ -12,7 +12,7 @@ resource "aws_alb" "application_load_balancer" {
 }
 
 resource "aws_lb_target_group" "target_group" {
-  name        = "misp"
+  name        = var.project
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"

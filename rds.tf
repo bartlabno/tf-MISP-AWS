@@ -3,7 +3,7 @@ data "aws_db_subnet_group" "db_subnet" {
 }
 
 resource "aws_rds_cluster" "misp" {
-  cluster_identifier      = "misp"
+  cluster_identifier      = var.project
   engine                  = "aurora-mysql"
   engine_version          = "8.0.mysql_aurora.3.05.2"
   availability_zones      = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]

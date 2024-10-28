@@ -3,7 +3,7 @@ data "aws_kms_key" "ecr" {
 }
 
 resource "aws_ecr_repository" "misp" {
-  name                 = "misp"
+  name                 = var.project
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
