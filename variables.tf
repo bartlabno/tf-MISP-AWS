@@ -25,3 +25,7 @@ variable "vpc" {
 variable "base_domain" {
   type = string
 }
+
+variable "office_cidr" {
+  default = "51.149.8.0/24"
+}
