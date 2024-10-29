@@ -1,11 +1,11 @@
 resource "aws_security_group" "misp_helper" {
-  name = "${var.project}-${var.environment}-helper-ssh-allow"
+  name   = "${var.project}-${var.environment}-helper-ssh-allow"
   vpc_id = data.aws_vpc.misp.id
 
   egress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
@@ -16,13 +16,13 @@ resource "aws_network_interface_sg_attachment" "misp_helper" {
 }
 
 resource "aws_security_group" "misp_allow_https" {
-  name = "${var.project}-${var.environment}-allow-https"
+  name   = "${var.project}-${var.environment}-allow-https"
   vpc_id = data.aws_vpc.misp.id
 
   ingress {
-    from_port = 443
-    to_port = 443
-    protocol = "tcp"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
     cidr_blocks = [var.office_cidr]
   }
 }

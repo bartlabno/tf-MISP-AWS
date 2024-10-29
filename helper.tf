@@ -46,8 +46,8 @@ resource "aws_network_interface" "misp_helper" {
 }
 
 resource "aws_instance" "misp_helper" {
-  ami = var.environment != "prod" ? data.aws_ami.helper.id : "ami-01f10c2d6bce70d90"
-  instance_type = var.environment != "prod" ? "t2.micro" : "c5.2xlarge"
+  ami                  = var.environment != "prod" ? data.aws_ami.helper.id : "ami-01f10c2d6bce70d90"
+  instance_type        = var.environment != "prod" ? "t2.micro" : "c5.2xlarge"
   iam_instance_profile = aws_iam_instance_profile.misp_profile.id
 
   network_interface {
