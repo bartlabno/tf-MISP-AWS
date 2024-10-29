@@ -1,37 +1,36 @@
 resource "aws_ecs_service" "misp" {
-    name = var.project
-    cluster = aws_ecs_cluster.misp.id
-    task_definition = "${aws_ecs_task_definition.misp.id}:${aws_ecs_task_definition.misp.revision}"
-    desired_count = 1
+  name            = var.project
+  cluster         = aws_ecs_cluster.misp.id
+  task_definition = "${aws_ecs_task_definition.misp.id}:${aws_ecs_task_definition.misp.revision}"
+  desired_count   = 1
+  launch_type     = "FARGATE"
 
-    enable_ecs_managed_tags = true
+  depends_on = [aws_cloudwatch_log_group.ecs_misp]
 
-    health_check_grace_period_seconds = 120
-    propagate_tags = "TASK_DEFINITION"
+  enable_ecs_managed_tags = true
 
-    deployment_circuit_breaker {
-        enable = true
-        rollback = true
-    }
+  health_check_grace_period_seconds = 120
+  propagate_tags                    = "TASK_DEFINITION"
 
-    wait_for_steady_state = true
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
 
-    load_balancer {
-        container_name = var.project
-        container_port = "80"
-        target_group_arn = "arn:aws:elasticloadbalancing:eu-west-2:779799343306:targetgroup/misp/da4d0311f440085c"
-    }
+  wait_for_steady_state = true
 
-    network_configuration {
-        assign_public_ip = true
-        security_groups = [
-            "sg-099a8afc0dcdbe1e4",
-            "sg-0d08b5d03f5faa340"
-        ]
-        subnets = [
-            "subnet-02a0882b3e4c86373",
-            "subnet-08919d492ab1448af",
-            "subnet-096f4e8156c027d19"
-        ]
-    }
+  load_balancer {
+    container_name   = var.project
+    container_port   = "80"
+    target_group_arn = aws_lb_target_group.target_group.arn
+  }
+
+  network_configuration {
+    assign_public_ip = true
+    security_groups = [
+      aws_security_group.misp_allow_internal.id,
+      aws_security_group.misp_allow_https.id
+    ]
+    subnets = [data.aws_subnets.public_subnets.ids[0], data.aws_subnets.public_subnets.ids[1], data.aws_subnets.public_subnets.ids[2]]
+  }
 }

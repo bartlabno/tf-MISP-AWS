@@ -1,6 +1,6 @@
-owner = "Cabinet Office"
+owner       = "Cabinet Office"
 environment = "prod"
-project = "misp"
+project     = "misp"
 
 profile = "cst-prod"
 

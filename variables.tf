@@ -1,23 +1,31 @@
 variable "environment" {
-    type    = string
+  type = string
 }
 
 variable "project" {
-    type    = string
+  type = string
 }
 
 variable "owner" {
-    type = string
+  type = string
 }
 
 variable "profile" {
-    type = string
+  type = string
 }
 
 variable "image_version" {
-    type = string
+  type = string
 }
 
 variable "vpc" {
-    type = string
+  type = string
+}
+
+variable "base_domain" {
+  type = string
+}
+
+variable "office_cidr" {
+  default = "51.149.8.0/24"
 }

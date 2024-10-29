@@ -1,3 +1,4 @@
+data "aws_caller_identity" "current" {}
 terraform {
   required_version = ">= 0.13"
   required_providers {
@@ -9,16 +10,16 @@ terraform {
 
   backend "s3" {
     bucket  = "gds-security-terraform"
-    key     = "terraform/state/account/779799343306/service/misp.tfstate"
+    key     = "terraform/state/account/cst-test/service/misp.tfstate"
     region  = "eu-west-2"
     profile = "cst-prod"
     encrypt = true
-    }
+  }
 }
 
 provider "aws" {
-  region     = "eu-west-2"
-  profile    = var.profile
+  region  = "eu-west-2"
+  profile = var.profile
 
   default_tags {
     tags = {

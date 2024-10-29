@@ -1,35 +1,35 @@
 resource "aws_kms_key" "ecs_retention" {
-    description             = "ecs_retention"
-    deletion_window_in_days = 7
+  description             = "ecs_retention"
+  deletion_window_in_days = 7
 }
 
 resource "aws_service_discovery_http_namespace" "misp" {
-    name = var.project
+  name = var.project
 }
 
 resource "aws_cloudwatch_log_group" "ecs_misp" {
-    name = "/ecs/${var.project}"
+  name = "/ecs/${var.environment}/${var.project}"
 }
 
 resource "aws_ecs_cluster" "misp" {
-    name = var.project
+  name = var.project
 
-    setting {
-      name  = "containerInsights"
-      value = "enabled"
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
+
+  configuration {
+    execute_command_configuration {
+      logging = "DEFAULT"
     }
+  }
 
-    configuration {
-        execute_command_configuration {
-            logging = "DEFAULT"
-        }
-    }
+  service_connect_defaults {
+    namespace = aws_service_discovery_http_namespace.misp.arn
+  }
 
-    service_connect_defaults {
-        namespace = aws_service_discovery_http_namespace.misp.arn
-    }
-
-    tags = "${tomap({
-        "AWS.SSM.AppManager.ECS.Cluster.ARN" = "arn:aws:ecs:eu-west-2:779799343306:cluster/misp"
-    })}"
+  tags = (tomap({
+    "AWS.SSM.AppManager.ECS.Cluster.ARN" = "arn:aws:ecs:eu-west-2:${data.aws_caller_identity.current.account_id}:cluster/misp"
+  }))
 }
