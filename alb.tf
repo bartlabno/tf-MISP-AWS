@@ -8,7 +8,10 @@ resource "aws_alb" "application_load_balancer" {
   internal           = false
   load_balancer_type = "application"
   subnets            = [data.aws_subnets.public_subnets.ids[0], data.aws_subnets.public_subnets.ids[1], data.aws_subnets.public_subnets.ids[2]]
-  security_groups    = [data.aws_security_groups.default.ids[0], aws_security_group.misp_allow_https.id]
+  security_groups = [
+    aws_security_group.misp_allow_internal.id,
+    aws_security_group.misp_allow_https.id
+  ]
 }
 
 resource "aws_lb_target_group" "target_group" {

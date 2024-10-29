@@ -121,7 +121,7 @@ resource "aws_ecs_task_definition" "misp" {
         },
         {
           name  = "SMTP_HOST"
-          value = var.environment == "prod" ? "email-smtp.eu-west-2.amazonaws.com" : ""
+          value = var.environment == "prod" ? "email-smtp.eu-west-2.amazonaws.com" : " "
         },
         {
           name  = "SECURITY_ADVANCED_AUTHKEYS"

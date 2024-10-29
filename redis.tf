@@ -8,8 +8,10 @@ resource "aws_elasticache_cluster" "misp" {
   port                     = 6379
   snapshot_retention_limit = 0
 
-  subnet_group_name  = aws_elasticache_subnet_group.misp.name
-  security_group_ids = [data.aws_security_groups.default.ids[0]]
+  subnet_group_name = aws_elasticache_subnet_group.misp.name
+  security_group_ids = [
+    aws_security_group.misp_allow_internal.id
+  ]
 }
 
 resource "aws_elasticache_subnet_group" "misp" {

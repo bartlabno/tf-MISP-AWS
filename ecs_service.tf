@@ -28,7 +28,7 @@ resource "aws_ecs_service" "misp" {
   network_configuration {
     assign_public_ip = true
     security_groups = [
-      data.aws_security_groups.default.ids[0],
+      aws_security_group.misp_allow_internal.id,
       aws_security_group.misp_allow_https.id
     ]
     subnets = [data.aws_subnets.public_subnets.ids[0], data.aws_subnets.public_subnets.ids[1], data.aws_subnets.public_subnets.ids[2]]

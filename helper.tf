@@ -63,3 +63,8 @@ resource "aws_instance" "misp_helper" {
 resource "aws_eip" "misp_helper" {
   instance = aws_instance.misp_helper.id
 }
+
+resource "aws_network_interface_sg_attachment" "misp_helper" {
+  network_interface_id = aws_instance.misp_helper.primary_network_interface_id
+  security_group_id    = aws_security_group.misp_allow_internal.id
+}

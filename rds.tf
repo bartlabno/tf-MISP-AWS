@@ -20,7 +20,9 @@ resource "aws_rds_cluster" "misp" {
   backup_retention_period = 7
   preferred_backup_window = "01:00-02:00"
 
-  vpc_security_group_ids = [data.aws_security_groups.default.ids[0]]
+  vpc_security_group_ids = [
+    aws_security_group.misp_allow_internal.id
+  ]
 
   master_username = random_password.db_username.result
   master_password = random_password.db_password.result
