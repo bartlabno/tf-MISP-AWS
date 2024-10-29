@@ -26,7 +26,7 @@ data "aws_subnets" "private_subnets" {
   }
 }
 
-data "aws_security_groups" "sgs" {
+data "aws_security_groups" "misp" {
   filter {
     name   = "vpc-id"
     values = [var.vpc]
@@ -35,5 +35,17 @@ data "aws_security_groups" "sgs" {
   filter {
     name   = "group-name"
     values = ["*misp*"]
+  }
+}
+
+data "aws_security_groups" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [var.vpc]
+  }
+
+  filter {
+    name   = "group-name"
+    values = ["*default*"]
   }
 }

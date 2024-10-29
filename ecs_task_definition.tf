@@ -74,7 +74,7 @@ resource "aws_ecs_task_definition" "misp" {
       essential = true
 
       memory         = 16384
-      cpu            = 4
+      cpu            = 4096
       mountPoints    = []
       systemControls = []
       volumesFrom    = []
@@ -109,7 +109,7 @@ resource "aws_ecs_task_definition" "misp" {
         },
         {
           name  = "REDIS_HOST"
-          value = aws_elasticache_cluster.misp-001.cluster_address
+          value = aws_elasticache_cluster.misp.cache_nodes.0.address
         },
         {
           name  = "DATA_DIR"
@@ -137,11 +137,11 @@ resource "aws_ecs_task_definition" "misp" {
         },
         {
           name  = "MISP_EMAIL"
-          value = var.environment == "prod" ? "misp@cyber-security.digital.cabinet-office.gov.uk" : ""
+          value = "${var.project}@${var.base_domain}"
         },
         {
           name  = "MYSQL_HOST"
-          value = aws_rds_cluster.misp.endpoint
+          value = aws_rds_cluster_instance.misp[0].endpoint
         },
         {
           name  = "PHP_TIMEZONE"
