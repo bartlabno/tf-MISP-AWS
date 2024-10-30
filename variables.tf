@@ -10,15 +10,7 @@ variable "owner" {
   type = string
 }
 
-variable "profile" {
-  type = string
-}
-
 variable "image_version" {
-  type = string
-}
-
-variable "vpc" {
   type = string
 }
 
