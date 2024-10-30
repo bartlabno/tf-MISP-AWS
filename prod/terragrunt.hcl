@@ -4,11 +4,11 @@ terraform {
 
 inputs = {
   owner       = "Cabinet Office"
-  environment = "test"
+  environment = "prod"
   project     = "misp"
-  base_domain = "misp.staging.gds-cyber-security.digital"
+  base_domain = "misp.cyber-security.digital.cabinet-office.gov.uk"
 
-  profile = "cst-test"
+  profile = "cst-prod"
 
   image_version = "latest"
 
@@ -18,10 +18,10 @@ inputs = {
 remote_state {
   backend = "s3"
   config = {
-    bucket  = "gds-security-terraform-staging"
-    key     = "staging/misp/services/misp.tfstate"
-    region  = "eu-west-1"
-    profile = "cst-test"
+    bucket  = "gds-security-terraform"
+    key     = "terraform/state/account/cst-test/service/misp.tfstate"
+    region  = "eu-west-2"
+    profile = "cst-prod"
     encrypt = true
   }
   generate = {
