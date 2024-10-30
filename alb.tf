@@ -4,10 +4,10 @@ data "aws_acm_certificate" "misp" {
 }
 
 resource "aws_alb" "application_load_balancer" {
-  name               = var.project
+  name               = "${var.project}-${var.environment}"
   internal           = false
   load_balancer_type = "application"
-  subnets            = [data.aws_subnets.public_subnets.ids[0], data.aws_subnets.public_subnets.ids[1], data.aws_subnets.public_subnets.ids[2]]
+  subnets            = module.vpc-misp.public_subnets
   security_groups = [
     aws_security_group.misp_allow_internal.id,
     aws_security_group.misp_allow_https.id
@@ -15,17 +15,17 @@ resource "aws_alb" "application_load_balancer" {
 }
 
 resource "aws_lb_target_group" "target_group" {
-  name        = var.project
+  name        = "${var.project}-${var.environment}"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
-  vpc_id      = var.vpc
+  vpc_id      = module.vpc-misp.vpc_id
 
   health_check {
     healthy_threshold   = "3"
     interval            = "300"
     protocol            = "HTTP"
-    matcher             = "200"
+    matcher             = "200-399"
     timeout             = "3"
     unhealthy_threshold = "2"
   }
