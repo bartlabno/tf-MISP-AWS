@@ -27,7 +27,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.ROLE_TO_ASSUME_ARN }}
-        aws-region: eu-west-1
+        aws-region: eu-west-2
         role-session-name: GithubActionsSession
 
     - name: Setup Terragrunt

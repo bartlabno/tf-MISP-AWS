@@ -21,7 +21,7 @@ remote_state {
     bucket  = "gds-security-terraform-staging"
     key     = "staging/misp/services/misp.tfstate"
     region  = "eu-west-1"
-    profile = "cst-test"
+    # profile = "cst-test"
     encrypt = true
   }
   generate = {
