@@ -22,17 +22,17 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-#    - name: Set up AWS creds
-#      uses: aws-actions/configure-aws-credentials@v4
-#      with:
-#        role-to-assume: ${{ secrets.ROLE_TO_ASSUME_ARN }}
-#        aws-region: eu-west-2
-#
-#    - name: Setup Terraform
-#      uses: hashicorp/setup-terraform@v1
-#
-#    - name: Terraform Init
-#      run: terraform init
+    - name: Set up AWS creds
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.ROLE_TO_ASSUME_ARN }}
+        aws-region: eu-west-2
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Terraform Init
+      run: terraform init
 
     - name: Terraform Format
       run: terraform fmt -check
