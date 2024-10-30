@@ -30,14 +30,23 @@ jobs:
         aws-region: eu-west-2
         role-session-name: GithubActionsSession
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
+    - name: Setup Terragrunt
+    - uses: autero1/action-terragrunt@v3
+      with:
+        terragrunt-version: latest
 
-    - name: Terraform Init
-      run: terraform init
+    - name: Terragrunt Init
+      run: terragrunt init --terragrunt-non-interactive 
+      working-directory: ./test
 
     - name: Terraform Format
-      run: terraform fmt -check
+      run: terragrunt fmt -check --terragrunt-non-interactive
+      working-directory: ./test
 
-#    - name: Terraform Validate
-#      run: terraform validate
+    - name: Terraform Validate
+      working-directory: ./test
+      run: terragrunt validate --terragrunt-non-interactive
+
+    - name: Terraform Plan
+      working-directory: ./test
+      run: terragrunt plan --terragrunt-non-interactive
