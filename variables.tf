@@ -18,10 +18,6 @@ variable "image_version" {
   type = string
 }
 
-variable "vpc" {
-  type = string
-}
-
 variable "base_domain" {
   type = string
 }
