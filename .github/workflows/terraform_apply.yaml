@@ -1,0 +1,50 @@
+name: 'Terraform'
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    environment: test
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up AWS creds
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.ROLE_TO_ASSUME_ARN }}
+        aws-region: eu-west-2
+        role-session-name: GithubActionsSession
+
+    - name: Setup Terragrunt
+      uses: autero1/action-terragrunt@v3
+      with:
+        terragrunt-version: latest
+    - name: Terragrunt Init
+      run: terragrunt init --terragrunt-non-interactive
+      working-directory: ./test
+    - name: Terraform Format
+      run: terragrunt fmt -check --terragrunt-non-interactive
+      working-directory: ./test
+    - name: Terraform Validate
+      working-directory: ./test
+      run: terragrunt validate --terragrunt-non-interactive
+    - name: Terraform Plan
+      working-directory: ./test
+      run: terragrunt plan --terragrunt-non-interactive
+    - name: Terraform Apply
+      working-directory: ./test
+      run: terragrunt apply --terragrunt-non-interactive
