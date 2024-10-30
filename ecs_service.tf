@@ -20,7 +20,7 @@ resource "aws_ecs_service" "misp" {
   wait_for_steady_state = true
 
   load_balancer {
-    container_name   = var.project
+    container_name   = "${var.project}-${var.environment}"
     container_port   = "80"
     target_group_arn = aws_lb_target_group.target_group.arn
   }

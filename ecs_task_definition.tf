@@ -69,7 +69,7 @@ resource "aws_ecs_task_definition" "misp" {
 
   container_definitions = jsonencode([
     {
-      name      = var.project
+      name      = "${var.project}-${var.environment}"
       image     = "ghcr.io/nukib/misp:${var.image_version}"
       essential = true
 
