@@ -42,7 +42,7 @@ resource "aws_iam_instance_profile" "misp_profile" {
 }
 
 resource "aws_network_interface" "misp_helper" {
-  subnet_id = data.aws_subnets.public_subnets.ids[0]
+  subnet_id = module.vpc-misp.private_subnets[0]
 }
 
 resource "aws_instance" "misp_helper" {
@@ -55,8 +55,12 @@ resource "aws_instance" "misp_helper" {
     network_interface_id = aws_network_interface.misp_helper.id
   }
 
+  user_data = <<EOF
+#!/bin/bash
+EOF
+
   tags = {
-    Name = "misp-helper"
+    Name = "${var.project}-${var.environment}-misp-helper"
   }
 }
 

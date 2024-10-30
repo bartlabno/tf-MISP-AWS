@@ -52,7 +52,7 @@ resource "aws_iam_role_policy" "password_policy_secretsmanager" {
 }
 
 resource "aws_ecs_task_definition" "misp" {
-  family = var.project
+  family = "${var.project}-${var.environment}"
 
   cpu    = 4096
   memory = 16384
@@ -70,7 +70,7 @@ resource "aws_ecs_task_definition" "misp" {
   container_definitions = jsonencode([
     {
       name      = var.project
-      image     = var.image_version == "latest" ? "ghcr.io/nukib/misp:latest" : "${aws_ecr_repository.misp.repository_url}:${var.image_version}"
+      image     = "ghcr.io/nukib/misp:${var.image_version}"
       essential = true
 
       memory         = 16384
@@ -84,14 +84,14 @@ resource "aws_ecs_task_definition" "misp" {
         options = {
           awslogs-create-group  = "true"
           awslogs-group         = "/ecs/${var.environment}/${var.project}"
-          awslogs-region        = "eu-west-2"
+          awslogs-region        = data.aws_region.current.name
           awslogs-stream-prefix = "ecs"
         }
       }
 
       portMappings = [
         {
-          name          = var.project
+          name          = "${var.project}-${var.environment}"
           containerPort = 80
           hostPort      = 80
           protocol      = "tcp"
@@ -121,7 +121,7 @@ resource "aws_ecs_task_definition" "misp" {
         },
         {
           name  = "SMTP_HOST"
-          value = var.environment == "prod" ? "email-smtp.eu-west-2.amazonaws.com" : " "
+          value = var.environment == "prod" ? "email-smtp.${data.aws_region.current.name}.amazonaws.com" : " "
         },
         {
           name  = "SECURITY_ADVANCED_AUTHKEYS"

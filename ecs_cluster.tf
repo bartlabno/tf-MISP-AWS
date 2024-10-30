@@ -4,7 +4,7 @@ resource "aws_kms_key" "ecs_retention" {
 }
 
 resource "aws_service_discovery_http_namespace" "misp" {
-  name = var.project
+  name = "${var.project}-${var.environment}"
 }
 
 resource "aws_cloudwatch_log_group" "ecs_misp" {
@@ -12,7 +12,7 @@ resource "aws_cloudwatch_log_group" "ecs_misp" {
 }
 
 resource "aws_ecs_cluster" "misp" {
-  name = var.project
+  name = "${var.project}-${var.environment}"
 
   setting {
     name  = "containerInsights"
@@ -30,6 +30,6 @@ resource "aws_ecs_cluster" "misp" {
   }
 
   tags = (tomap({
-    "AWS.SSM.AppManager.ECS.Cluster.ARN" = "arn:aws:ecs:eu-west-2:${data.aws_caller_identity.current.account_id}:cluster/misp"
+    "AWS.SSM.AppManager.ECS.Cluster.ARN" = "arn:aws:ecs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:cluster/misp"
   }))
 }

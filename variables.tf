@@ -29,3 +29,7 @@ variable "base_domain" {
 variable "office_cidr" {
   default = "51.149.8.0/24"
 }
+
+variable "block_cidr" {
+  type = string
+}

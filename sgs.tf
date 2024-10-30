@@ -1,6 +1,6 @@
 resource "aws_security_group" "misp_helper" {
-  name   = "${var.project}-${var.environment}-helper-ssh-allow"
-  vpc_id = data.aws_vpc.misp.id
+  name   = "${var.project}-${var.environment}-helper-allow"
+  vpc_id = module.vpc-misp.vpc_id
 
   ingress {
     from_port   = 443
@@ -12,7 +12,7 @@ resource "aws_security_group" "misp_helper" {
 
 resource "aws_security_group" "misp_allow_https" {
   name   = "${var.project}-${var.environment}-allow-https"
-  vpc_id = data.aws_vpc.misp.id
+  vpc_id = module.vpc-misp.vpc_id
 
   ingress {
     from_port   = 443
@@ -24,20 +24,20 @@ resource "aws_security_group" "misp_allow_https" {
 
 resource "aws_security_group" "misp_allow_internal" {
   name   = "${var.project}-${var.environment}-allow-internal"
-  vpc_id = data.aws_vpc.misp.id
+  vpc_id = module.vpc-misp.vpc_id
 
   ingress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = [data.aws_vpc.misp.cidr_block]
+    cidr_blocks = [var.block_cidr]
   }
 
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = [data.aws_vpc.misp.cidr_block]
+    cidr_blocks = [var.block_cidr]
   }
 
   egress {

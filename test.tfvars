@@ -8,3 +8,5 @@ profile = "cst-test"
 image_version = "latest"
 
 vpc = "vpc-0cf796197229e4707"
+
+block_cidr = "10.30.0.0/16"

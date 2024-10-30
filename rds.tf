@@ -1,22 +1,14 @@
 resource "aws_db_subnet_group" "misp" {
-  name = "${var.project}-db-subnet"
-  subnet_ids = [
-    data.aws_subnets.private_subnets.ids[0],
-    data.aws_subnets.private_subnets.ids[1],
-    data.aws_subnets.private_subnets.ids[2],
-    data.aws_subnets.public_subnets.ids[0],
-    data.aws_subnets.public_subnets.ids[1],
-    data.aws_subnets.public_subnets.ids[2]
-  ]
+  name       = "${var.project}-${var.environment}-db-subnet"
+  subnet_ids = module.vpc-misp.database_subnets
 }
 
 
 resource "aws_rds_cluster" "misp" {
-  cluster_identifier      = var.project
+  cluster_identifier      = "${var.project}-${var.environment}"
   engine                  = "aurora-mysql"
   engine_version          = "8.0.mysql_aurora.3.05.2"
-  availability_zones      = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
-  database_name           = "misp"
+  database_name           = var.project
   backup_retention_period = 7
   preferred_backup_window = "01:00-02:00"
 

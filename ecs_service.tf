@@ -1,5 +1,5 @@
 resource "aws_ecs_service" "misp" {
-  name            = var.project
+  name            = "${var.project}-${var.environment}"
   cluster         = aws_ecs_cluster.misp.id
   task_definition = "${aws_ecs_task_definition.misp.id}:${aws_ecs_task_definition.misp.revision}"
   desired_count   = 1
@@ -26,11 +26,11 @@ resource "aws_ecs_service" "misp" {
   }
 
   network_configuration {
-    assign_public_ip = true
+    assign_public_ip = false
     security_groups = [
       aws_security_group.misp_allow_internal.id,
       aws_security_group.misp_allow_https.id
     ]
-    subnets = [data.aws_subnets.public_subnets.ids[0], data.aws_subnets.public_subnets.ids[1], data.aws_subnets.public_subnets.ids[2]]
+    subnets = module.vpc-misp.private_subnets
   }
 }
