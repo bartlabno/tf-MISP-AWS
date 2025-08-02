@@ -2,7 +2,7 @@ name: 'Terraform'
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "production" ]
 
 permissions:
   contents: read
@@ -12,7 +12,7 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
-    environment: test
+    environment: production
 
     defaults:
       run:
@@ -35,16 +35,16 @@ jobs:
         terragrunt-version: latest
     - name: Terragrunt Init
       run: terragrunt init --terragrunt-non-interactive
-      working-directory: ./test
+      working-directory: ./production
     - name: Terraform Format
       run: terragrunt fmt -check --terragrunt-non-interactive
-      working-directory: ./test
+      working-directory: ./production
     - name: Terraform Validate
-      working-directory: ./test
+      working-directory: ./production
       run: terragrunt validate --terragrunt-non-interactive
     - name: Terraform Plan
-      working-directory: ./test
+      working-directory: ./production
       run: terragrunt plan --terragrunt-non-interactive
     - name: Terraform Apply
-      working-directory: ./test
+      working-directory: ./production
       run: terragrunt apply --terragrunt-non-interactive

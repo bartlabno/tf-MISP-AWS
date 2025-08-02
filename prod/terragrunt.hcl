@@ -3,25 +3,25 @@ terraform {
 }
 
 inputs = {
-  owner       = "Cabinet Office"
-  environment = "prod"
+  owner       = "The Company"
+  environment = "example-env"
   project     = "misp"
-  base_domain = "misp.cyber-security.digital.cabinet-office.gov.uk"
+  base_domain = "misp.example.com"
 
-  profile = "cst-prod"
+  profile = "misp"
 
   image_version = "latest"
 
-  block_cidr = "10.30.0.0/16"
+  block_cidr = "10.0.0.0/16"
 }
 
 remote_state {
   backend = "s3"
   config = {
-    bucket  = "gds-security-terraform"
-    key     = "terraform/state/account/cst-test/service/misp.tfstate"
+    bucket  = "your-terraform-state-bucket"
+    key     = "terraform/state/account/environment/misp.tfstate"
     region  = "eu-west-2"
-    profile = "cst-prod"
+    profile = "steate-profile"
     encrypt = true
   }
   generate = {

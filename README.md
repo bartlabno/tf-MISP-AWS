@@ -39,7 +39,7 @@ There is more optional variables available - described on developers [site](http
 ## AWS Setup
 AWS Setup is based on private and public VPCs handling frontend and backend setup.
 - Github Actions is used for deployments, maintenance (image updates, task definition updates)
-- When quering [misp url](misp.cyber-security.digital.cabinet-office.gov.uk) you are facing Internet Gateways allowing traffic to the LoadBalancers and ECS Service
+- When quering [misp url](misp.example.com) you are facing Internet Gateways allowing traffic to the LoadBalancers and ECS Service
 - Route53 is forwarding traffic to the Load Balancer
 - Load Balancer is routing traffic to the ECS Service (MISP)
 - MISP service is being managed by task definitions. These contains all important variables. It also pulls secrets from Secret Manager - for databe connectivity, SALT SHAs and other sensitive information
@@ -47,18 +47,3 @@ AWS Setup is based on private and public VPCs handling frontend and backend setu
 - ECS Service is connecting to the Redis which caches some requests and stores copy of feeds locally. These are being updated every hour
 - ECS Service is also connecting to the database, storing feeds, further configuration, user base, etc
 - ECS is connecting to the AWS SES which is sending emails when required
-
-## todo:
-- Some of the values in TF seems to be hardcoded
-- terraform import worked fine and terraform apply didn't break anything on the working infrastructure, but there are some bits which doesn't work properly at the moment on the fresh deployment
-    - EC2 instance is missing after installation process, Ansible or EC2 scripts recommended to install plugins, set cron and crowdstrike updates
-    - EC2 instance doesn't properly handle security groups
-    - some of the IAM policies are missing (ECS task for example)
-    - Some of the AWS secrets when value null can be created with terrafrom - passwords for example. There are not at the moment
-    - Load Balancer target groups are maintained manually - missed when doing imports
-    - Route53 subdomain is done manaully but can be done automatically as well
-    - Certifications aren't handled with TF as they belong to the Route53 separately
-    - AWS SES - email configuration isn't fully automated yet
-- Terraform also doesn't setup DB backups yet
-- ECS container is missing volumes at the moment. There is a benefit of attaching some - especially `/var/www/MISP/app/attachments/` which gives possiblities to upload malware samples and attachments
-
