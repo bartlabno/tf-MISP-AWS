@@ -11,13 +11,16 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
-    environment: example-env
+    environment: lint
 
     defaults:
       run:
         shell: bash
 
     steps:
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
     - name: Checkout
       uses: actions/checkout@v4
 
